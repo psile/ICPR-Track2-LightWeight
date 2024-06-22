@@ -65,6 +65,7 @@ class Trainer(object):
             num = 0
             for i, ( data, size) in enumerate(tbar):
                 data = data.cuda()
+                data=data.mean(dim=1, keepdim=True)
                 pred = self.model(data)
                 save_resize_pred(pred, size, args.crop_size, eval_image_path, self.val_img_ids, num, args.suffix)
 

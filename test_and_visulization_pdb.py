@@ -32,10 +32,12 @@ class Trainer(object):
         # Choose and load model (this paper is finished by one GPU)
         model       = LightWeightNetwork()#.cuda()
         dir='model_weight.pth.tar'
+        a1=torch.randn(1,3,256,256)
+        b1=torch.randn(1,1,512,512)
         pdb.set_trace()
         model.load_state_dict(torch.load(dir)['state_dict'])
-        model.apply(weights_init_xavier)
-        print("Model Initializing")
+        # model.apply(weights_init_xavier)
+        # print("Model Initializing")
         self.model      = model
 
         # DATA_Evaluation metrics

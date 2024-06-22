@@ -82,10 +82,11 @@ class Trainer(object):
             num = 0
             for i, ( data, labels, size) in enumerate(tbar):
                 data = data.cuda()
+                data=data.mean(dim=1, keepdim=True)
                 labels = labels.cuda()
                 pred = self.model(data)
                 
-
+             
                 loss = SoftIoULoss(pred, labels)
                 #save_Ori_intensity_Pred_GT(pred, labels,target_image_path, val_img_ids, num, args.suffix,args.crop_size)
                 save_resize_pred(pred, size, args.crop_size, eval_image_path, self.val_img_ids, num, args.suffix)

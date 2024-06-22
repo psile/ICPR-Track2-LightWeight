@@ -81,6 +81,7 @@ class Trainer(object):
             num = 0
             for i, ( data, labels, size) in enumerate(tbar):
                 data = data.cuda()
+                data=data.mean(dim=1, keepdim=True)
                 _, _, height, width = data.size()
 
                 # 计算需要填充的尺寸
