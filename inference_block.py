@@ -81,7 +81,7 @@ class Trainer(object):
 
                 num_blocks_height = (padded_height + max_block_size[0] - 1) // max_block_size[0]
                 num_blocks_width = (padded_width + max_block_size[1] - 1) // max_block_size[1]
-
+                
                 # 动态分块推理
                 output = torch.zeros_like(data)
                 for i in range(num_blocks_height):
@@ -111,6 +111,7 @@ class Trainer(object):
                 # '''crf'''
                 # output= crf_refine(img[0].permute(1, 2, 0).cpu().numpy(), (output[0][0]>opt.threshold).cpu().numpy().astype(np.uint8))
                 # '''crf'''
+                pdb.set_trace()
                 output = output[:,:,:size[0],:size[1]]
                 pred = output  
                 #pred = self.model(data)
