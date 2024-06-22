@@ -14,7 +14,7 @@ from model.loss   import *
 from model.load_param_data import load_dataset1, load_param, load_dataset_eva
 
 # Model
-from net import *
+from model.net import *
 import pdb
 class Trainer(object):
     def __init__(self, args):

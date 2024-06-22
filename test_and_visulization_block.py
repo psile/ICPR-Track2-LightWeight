@@ -15,7 +15,7 @@ from model.load_param_data import load_dataset1, load_param, load_dataset_eva
 import pdb
 # Model
 # from model.net import *
-from net import *
+from model.net import *
 max_block_size = (512, 512)
 class Trainer(object):
     def __init__(self, args):
