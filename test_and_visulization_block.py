@@ -12,11 +12,11 @@ from model.utils  import *
 from model.metric import *
 from model.loss   import *
 from model.load_param_data import load_dataset1, load_param, load_dataset_eva
-
+import pdb
 # Model
 # from model.net import *
 from net import *
-import pdb
+max_block_size = (512, 512)
 class Trainer(object):
     def __init__(self, args):
 
@@ -50,8 +50,7 @@ class Trainer(object):
 
         # Choose and load model (this paper is finished by one GPU)
         model       = LightWeightNetwork()
-        #model= Net('ACM', mode='test')#.cuda()
-        #pdb.set_trace()
+        #model= Net('ACM', mode='test')
         model.apply(weights_init_xavier)
         print("Model Initializing")
         self.model      = model
@@ -82,8 +81,58 @@ class Trainer(object):
             num = 0
             for i, ( data, labels, size) in enumerate(tbar):
                 data = data.cuda()
+                _, _, height, width = data.size()
+
+                # 计算需要填充的尺寸
+                pad_height = (max_block_size[0] - height % max_block_size[0]) % max_block_size[0] # 512 - 832 % 512 = 192
+                pad_width = (max_block_size[1] - width % max_block_size[1]) % max_block_size[1] # 512 - 1088 % 512 = 448
+            
+                # 对图像进行填充
+                #img=F.pad(img, (0, 0, pad_width, pad_height), fill=0, padding_mode='constant')
+                # img = F.pad(img, (0, 0, pad_width, pad_height), padding_mode='constant', constant_values=0)#padding_mode
+                data=F.pad(data, (0, pad_width,0, pad_height),mode='constant',value=0)
+                _, _, padded_height, padded_width = data.size()
+
+                num_blocks_height = (padded_height + max_block_size[0] - 1) // max_block_size[0]
+                num_blocks_width = (padded_width + max_block_size[1] - 1) // max_block_size[1]
+
+                # 动态分块推理
+                output = torch.zeros_like(data)
+                for i in range(num_blocks_height):
+                    for j in range(num_blocks_width):
+                        block_y = i * max_block_size[0]
+                        block_x = j * max_block_size[1]
+                        block_height = min(max_block_size[0], padded_height - block_y)
+                        block_width = min(max_block_size[1], padded_width - block_x)
+
+                        # 确保块的尺寸大于0
+                        if block_height <= 0 or block_width <= 0:
+                            print(f'Skipping block at (i={i}, j={j}) due to zero or negative size: height={block_height}, width={block_width}')
+                            continue
+
+                        block = data[:, :, block_y:block_y + block_height, block_x:block_x + block_width]
+                        
+
+                        try:
+                            pred_block = self.model(block)
+                        except RuntimeError as e:
+                            print(f'Error processing block at (i={i}, j={j}): {str(e)}')
+                            continue
+
+                        output[:, :, block_y:block_y + block_height, block_x:block_x + block_width] = pred_block
+
+                # 去除填充部分
+                # '''crf'''
+                # output= crf_refine(img[0].permute(1, 2, 0).cpu().numpy(), (output[0][0]>opt.threshold).cpu().numpy().astype(np.uint8))
+                # '''crf'''
+                output = output[:,:,:size[0],:size[1]]
+                pred = output  
+            
+                # gt_mask = gt_mask[:,:,:size[0],:size[1]]
+
+
                 labels = labels.cuda()
-                pred = self.model(data)
+                # pred = self.model(data)
                 
 
                 loss = SoftIoULoss(pred, labels)

@@ -14,7 +14,6 @@ from model.loss   import *
 from model.load_param_data import load_dataset1, load_param, load_dataset_eva
 
 # Model
-# from model.net import *
 from net import *
 import pdb
 class Trainer(object):
@@ -29,29 +28,12 @@ class Trainer(object):
         self.save_prefix = '_'.join([args.model, args.dataset])
         nb_filter, num_blocks = load_param(args.channel_size, args.backbone)
 
-        # Read image index from TXT
-        if args.mode    == 'TXT':
-            dataset_dir = args.root + '/' + args.dataset
-            #train_img_ids, val_img_ids, test_txt=load_dataset_eva(args.root, args.dataset,args.split_method)
-            val_img_ids, test_txt = load_dataset_eva(args.root, args.dataset, args.split_method)
-
-        self.val_img_ids, _ = load_dataset1(args.root, args.dataset, args.split_method)
-
-        if args.dataset=='ICPR_Track2':
-            Mean_Value = [0.2518, 0.2518, 0.2519]
-            Std_value  = [0.2557, 0.2557, 0.2558]
-
-        # Preprocess and load data
-        input_transform = transforms.Compose([
-                          transforms.ToTensor(),
-                          transforms.Normalize(Mean_Value, Std_value)])
-        testset         = TestSetLoader (dataset_dir,img_id=val_img_ids,base_size=args.base_size, crop_size=args.crop_size, transform=input_transform,suffix=args.suffix)
-        self.test_data  = DataLoader(dataset=testset,  batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers,drop_last=False)
-
+     
         # Choose and load model (this paper is finished by one GPU)
-        model       = LightWeightNetwork()
-        #model= Net('ACM', mode='test')#.cuda()
-        #pdb.set_trace()
+        model       = LightWeightNetwork()#.cuda()
+        dir='model_weight.pth.tar'
+        pdb.set_trace()
+        model.load_state_dict(torch.load(dir)['state_dict'])
         model.apply(weights_init_xavier)
         print("Model Initializing")
         self.model      = model
@@ -63,6 +45,7 @@ class Trainer(object):
         # Checkpoint
         #checkpoint        = torch.load(args.root.split('dataset')[0] +args.model_dir)
         checkpoint = torch.load(args.model_dir)
+
         target_image_path = dataset_dir + '/' +'visulization_result' + '/' + args.st_model + '_visulization_result'
         target_dir        = dataset_dir + '/' +'visulization_result' + '/' + args.st_model + '_visulization_fuse'
         eval_image_path   = './result_WS/'+ args.st_model +'/'+ 'visulization_result'
