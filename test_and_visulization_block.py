@@ -126,7 +126,7 @@ class Trainer(object):
                 # '''crf'''
                 # output= crf_refine(img[0].permute(1, 2, 0).cpu().numpy(), (output[0][0]>opt.threshold).cpu().numpy().astype(np.uint8))
                 # '''crf'''
-                output = output[:,:,:size[0],:size[1]]
+                output = output[:,:,:height,:width]#size[0] size[1]
                 pred = output  
             
                 # gt_mask = gt_mask[:,:,:size[0],:size[1]]

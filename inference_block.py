@@ -111,8 +111,8 @@ class Trainer(object):
                 # '''crf'''
                 # output= crf_refine(img[0].permute(1, 2, 0).cpu().numpy(), (output[0][0]>opt.threshold).cpu().numpy().astype(np.uint8))
                 # '''crf'''
-                pdb.set_trace()
-                output = output[:,:,:size[0],:size[1]]
+                
+                output = output[:,:,:height,:width]
                 pred = output  
                 #pred = self.model(data)
                 save_resize_pred(pred, size, args.crop_size, eval_image_path, self.val_img_ids, num, args.suffix)
