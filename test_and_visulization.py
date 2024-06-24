@@ -28,10 +28,11 @@ class Trainer(object):
         self.mIoU  = mIoU(1)
         self.save_prefix = '_'.join([args.model, args.dataset])
         nb_filter, num_blocks = load_param(args.channel_size, args.backbone)
-
+       
         # Read image index from TXT
         if args.mode    == 'TXT':
             dataset_dir = args.root + '/' + args.dataset
+            pdb.set_trace()
             #train_img_ids, val_img_ids, test_txt=load_dataset_eva(args.root, args.dataset,args.split_method)
             val_img_ids, test_txt = load_dataset_eva(args.root, args.dataset, args.split_method)
 
