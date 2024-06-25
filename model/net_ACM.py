@@ -47,8 +47,8 @@ class AsymBiChaFuse(nn.Module):
         return xs
 
 class LightWeightNetwork1(nn.Module):
-    def __init__(self, in_channels=1, layers=[1,1,1], channels=[8,16,32,64], fuse_mode='AsymBi', tiny=False, classes=1,
-                 norm_layer=BatchNorm2d,groups=1, norm_kwargs=None, **kwargs): #[3,3,3]
+    def __init__(self, in_channels=1, layers=[3,3,3], channels=[8,16,32,64], fuse_mode='AsymBi', tiny=False, classes=1,
+                 norm_layer=BatchNorm2d,groups=1, norm_kwargs=None, **kwargs):
         super(LightWeightNetwork1, self).__init__()
         self.layer_num = len(layers)
         self.tiny = tiny
@@ -207,17 +207,17 @@ class LightWeightNetwork(nn.Module):
         return self.model(img)
 
 #########################################################
-##2.测试ASKCResUNet
-if __name__ == '__main__':
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU，建议使用GPU环境，因为会快很多
-    layers = [3] * 3
-    channels = [x * 1 for x in [8, 16, 32, 64]]
-    in_channels = 3
-    model=LightWeightNetwork()
+###2.测试ASKCResUNet
+# if __name__ == '__main__':
+#     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU，建议使用GPU环境，因为会快很多
+#     layers = [3] * 3
+#     channels = [x * 1 for x in [8, 16, 32, 64]]
+#     in_channels = 3
+#     model=LightWeightNetwork(in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=False, classes=1)
 
-    model=model.cuda()
-    DATA = torch.randn(8,1,480,480).to(DEVICE)  #in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=True, classes=1
+#     model=model.cuda()
+#     DATA = torch.randn(8,3,480,480).to(DEVICE)
 
-    output=model(DATA)
-    print("output:",np.shape(output))
-##########################################################
+#     output=model(DATA)
+#     print("output:",np.shape(output))
+# ##########################################################

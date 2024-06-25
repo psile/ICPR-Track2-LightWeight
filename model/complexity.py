@@ -1,6 +1,6 @@
 from thop import profile
 import torch
-from net import *
+from net_light import *
 
 
 if __name__ == '__main__':
