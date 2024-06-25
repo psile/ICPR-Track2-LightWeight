@@ -18,15 +18,19 @@ max_block_size = (512, 512)
 threshold=0.45
 class Trainer(object):
     def __init__(self, args):
-        # '''begin'''
-        # model       = LightWeightNetwork()
-        # model.apply(weights_init_xavier)
-        # print("Model Initializing")
-        # self.model      = model
 
+        # Initial
+        self.args  = args
+        self.save_prefix = '_'.join([args.model, args.dataset])
+        '''begin'''
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        print("Model Initializing")
+        self.model      = model
+        pdb.set_trace()
 
-        # # Checkpoint
-        # checkpoint = torch.load(args.model_dir)
+        # Checkpoint
+        checkpoint = torch.load("model_weight.pth.tar")#"args.model_dir"
 
         # eval_image_path   = './result_WS/'+ args.st_model +'/'+ 'visulization_result'
         # eval_fuse_path    = './result_WS/'+ args.st_model +'/'+ 'visulization_fuse'
@@ -34,22 +38,17 @@ class Trainer(object):
 
         # make_visulization_dir(eval_image_path, eval_fuse_path)
 
-        # # Load trained model
-        # self.model.load_state_dict(checkpoint['state_dict'])
-        # self.model = self.model.to('cuda')
-        # '''end'''
-        # pdb.set_trace()
-        # Initial
-        self.args  = args
-        self.save_prefix = '_'.join([args.model, args.dataset])
-
+        # Load trained model
+        self.model.load_state_dict(checkpoint['state_dict'])
+        self.model = self.model.to('cuda')
+        '''end'''
         # Read image index from TXT
         if args.mode    == 'TXT':
             dataset_dir = args.root + '/' + args.dataset
             val_img_ids, test_txt = load_dataset_eva(args.root, args.dataset, args.split_method)
 
         self.val_img_ids, _ = load_dataset1(args.root, args.dataset, args.split_method)
-
+ 
 
         # Preprocess and load data
         # Choose and load model (this paper is finished by one GPU)

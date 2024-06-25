@@ -208,16 +208,16 @@ class LightWeightNetwork(nn.Module):
 
 #########################################################
 ##2.测试ASKCResUNet
-if __name__ == '__main__':
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU，建议使用GPU环境，因为会快很多
-    layers = [3] * 3
-    channels = [x * 1 for x in [8, 16, 32, 64]]
-    in_channels = 3
-    model=LightWeightNetwork()
+# if __name__ == '__main__':
+#     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU，建议使用GPU环境，因为会快很多
+#     layers = [3] * 3
+#     channels = [x * 1 for x in [8, 16, 32, 64]]
+#     in_channels = 3
+#     model=LightWeightNetwork()
 
-    model=model.cuda()
-    DATA = torch.randn(8,1,480,480).to(DEVICE)  #in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=True, classes=1
+#     model=model.cuda()
+#     DATA = torch.randn(8,1,480,480).to(DEVICE)  #in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=True, classes=1
 
-    output=model(DATA)
-    print("output:",np.shape(output))
-##########################################################
+#     output=model(DATA)
+#     print("output:",np.shape(output))
+# ##########################################################
