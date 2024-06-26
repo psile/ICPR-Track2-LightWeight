@@ -385,7 +385,7 @@ class CPM(nn.Module):
 
     def forward(self, x):
         reduced = self.conv1(x)
-
+        #pdb.set_trace() 
         blocks = []
         for i in range(len(self.scale_list)):
             blocks.append(self.scale_list[i](reduced))
@@ -538,7 +538,7 @@ class LightWeightNetwork1(nn.Module):
         c2 = self.layer2(c1)  # (4,32, 60, 60)
         c3 = self.layer3(c2)  # (4,64, 30, 30)
         out=c3
-        #out=self.context(c3)
+        out=self.context(c3)
         out = F.interpolate(out, size=[hei // 8, wid // 8], mode='bilinear', align_corners=True) #4
         out = self.fuse23(out, c2)
 
