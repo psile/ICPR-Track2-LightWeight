@@ -12,7 +12,7 @@ from model.load_param_data import load_dataset1, load_param, load_dataset_eva
 import pdb
 # Model
 # from model.net import *
-from model.net2 import *
+from model.net import *
 from basic_utils import BasicTestSetLoader,BasicInferenceSetLoader
 max_block_size = (512, 512)
 threshold=0.45
@@ -27,7 +27,7 @@ class Trainer(object):
         model.apply(weights_init_xavier)
         print("Model Initializing")
         self.model      = model
-        pdb.set_trace()
+        
 
         # Checkpoint
         checkpoint = torch.load(args.model_dir)#"args.model_dir" model_weight.pth.tar
@@ -41,6 +41,7 @@ class Trainer(object):
         # Load trained model
         self.model.load_state_dict(checkpoint['state_dict'])
         self.model = self.model.to('cuda')
+        pdb.set_trace()
         '''end'''
         # Read image index from TXT
         if args.mode    == 'TXT':
@@ -86,10 +87,10 @@ class Trainer(object):
 
                 pad_height = (max_block_size[0] - height % max_block_size[0]) % max_block_size[0] # 512 - 832 % 512 = 192
                 pad_width = (max_block_size[1] - width % max_block_size[1]) % max_block_size[1] # 512 - 1088 % 512 = 448
-            
+                img=F.pad(img, (0, 0, pad_width, pad_height), fill=0, padding_mode='constant')
                 #img=F.pad(img, (0, 0, pad_width, pad_height), fill=0, padding_mode='constant')
                 # img = F.pad(img, (0, 0, pad_width, pad_height), padding_mode='constant', constant_values=0)#padding_mode
-                data=F.pad(data, (0, pad_width,0, pad_height),mode='constant',value=0)
+                #data=F.pad(data, (0, pad_width,0, pad_height),mode='constant',value=0)
                 _, _, padded_height, padded_width = data.size()
 
                 num_blocks_height = (padded_height + max_block_size[0] - 1) // max_block_size[0]

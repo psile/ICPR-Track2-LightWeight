@@ -1,6 +1,6 @@
 from thop import profile
 import torch
-from net2 import LightWeightNetwork
+from net import LightWeightNetwork
 
 
 if __name__ == '__main__':
