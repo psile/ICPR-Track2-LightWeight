@@ -15,7 +15,7 @@ import pdb
 from model.net import *
 from basic_utils import BasicTestSetLoader,BasicInferenceSetLoader
 max_block_size = (512, 512)
-threshold=0.50
+threshold=0.55
 class Trainer(object):
     def __init__(self, args):
         # '''begin'''
