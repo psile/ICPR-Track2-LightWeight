@@ -12,7 +12,7 @@ from model.load_param_data import load_dataset1, load_param, load_dataset_eva
 import pdb
 # Model
 # from model.net import *
-from model.net import *
+from model.net2 import *
 from basic_utils import BasicTestSetLoader,BasicInferenceSetLoader
 max_block_size = (512, 512)
 threshold=0.45
@@ -30,7 +30,7 @@ class Trainer(object):
         pdb.set_trace()
 
         # Checkpoint
-        checkpoint = torch.load("model_weight.pth.tar")#"args.model_dir"
+        checkpoint = torch.load(args.model_dir)#"args.model_dir" model_weight.pth.tar
 
         # eval_image_path   = './result_WS/'+ args.st_model +'/'+ 'visulization_result'
         # eval_fuse_path    = './result_WS/'+ args.st_model +'/'+ 'visulization_fuse'

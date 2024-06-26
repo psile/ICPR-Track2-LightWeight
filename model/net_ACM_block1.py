@@ -3,7 +3,7 @@ import torch.nn as nn
 import  numpy as np
 from torch.nn import BatchNorm2d
 from  torchvision.models.resnet import BasicBlock
-
+import pdb
 import torch.nn.functional as F
 # from model.utils import init_weights, count_param
 class AsymBiChaFuse(nn.Module):
@@ -45,10 +45,11 @@ class AsymBiChaFuse(nn.Module):
         xs = 2 * torch.mul(xl, topdown_wei) + 2 * torch.mul(xh, bottomup_wei)
         xs = self.post(xs)
         return xs
-class ASKCResUNet(nn.Module):
+
+class LightWeightNetwork1(nn.Module):
     def __init__(self, in_channels=1, layers=[1,1,1], channels=[8,16,32,64], fuse_mode='AsymBi', tiny=False, classes=1,
-                 norm_layer=BatchNorm2d,groups=1, norm_kwargs=None, **kwargs):
-        super(ASKCResUNet, self).__init__()
+                 norm_layer=BatchNorm2d,groups=1, norm_kwargs=None, **kwargs): #[3,3,3]
+        super(LightWeightNetwork1, self).__init__()
         self.layer_num = len(layers)
         self.tiny = tiny
         self._norm_layer = norm_layer
@@ -81,35 +82,35 @@ class ASKCResUNet(nn.Module):
             norm_layer(stem_width * 2,momentum=self.momentum),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-            ).cuda()
+            )
 
         self.layer1 = self._make_layer(block=BasicBlock, blocks=layers[0],
                                        out_channels=channels[1],
-                                       in_channels=channels[1], stride=1).cuda()
+                                       in_channels=channels[1], stride=1)
 
         self.layer2 = self._make_layer(block=BasicBlock, blocks=layers[1],
                                        out_channels=channels[2], stride=2,
-                                       in_channels=channels[1]).cuda()
+                                       in_channels=channels[1])
         #
         self.layer3 = self._make_layer(block=BasicBlock, blocks=layers[2],
                                        out_channels=channels[3], stride=2,
-                                       in_channels=channels[2]).cuda()
+                                       in_channels=channels[2])
 
         self.deconv2 = nn.ConvTranspose2d(in_channels=channels[3] ,out_channels=channels[2], kernel_size=(4, 4),     ##channels: 8 16 32 64
-                                          stride=2, padding=1).cuda()
+                                          stride=2, padding=1)
         self.uplayer2 = self._make_layer(block=BasicBlock, blocks=layers[1],
                                          out_channels=channels[2], stride=1,
-                                         in_channels=channels[2]).cuda()
-        self.fuse2 = self._fuse_layer(fuse_mode, channels=channels[2]).cuda()
+                                         in_channels=channels[2])
+        self.fuse2 = self._fuse_layer(fuse_mode, channels=channels[2])
 
         self.deconv1 = nn.ConvTranspose2d(in_channels=channels[2] ,out_channels=channels[1], kernel_size=(4, 4),
-                                          stride=2, padding=1).cuda()
+                                          stride=2, padding=1)
         self.uplayer1 = self._make_layer(block=BasicBlock, blocks=layers[0],
                                          out_channels=channels[1], stride=1,
-                                         in_channels=channels[1]).cuda()
-        self.fuse1 = self._fuse_layer(fuse_mode, channels=channels[1]).cuda()
+                                         in_channels=channels[1])
+        self.fuse1 = self._fuse_layer(fuse_mode, channels=channels[1])
 
-        self.head = _FCNHead(in_channels=channels[1], channels=classes, momentum=self.momentum).cuda()
+        self.head = _FCNHead(in_channels=channels[1], channels=classes, momentum=self.momentum)
 
 
     def _make_layer(self, block, out_channels, in_channels, blocks, stride):
@@ -143,7 +144,6 @@ class ASKCResUNet(nn.Module):
         if C>1:
             x=x.mean(dim=1, keepdim=True)
         _, _, hei, wid = x.shape
-       
 
         x = self.stem(x)      # (4,16,120,120)
         c1 = self.layer1(x)   # (4,16,120,120)
@@ -193,29 +193,30 @@ def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
+
 class LightWeightNetwork(nn.Module):
     def __init__(self,):
         super(LightWeightNetwork, self).__init__()
        
         #pdb.set_trace()
         
-        self.model = ASKCResUNet()
+        self.model = LightWeightNetwork1()
        
         
     def forward(self, img):
         return self.model(img)
 
 #########################################################
-###2.测试ASKCResUNet
+#2.测试ASKCResUNet
 if __name__ == '__main__':
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu") # 让torch判断是否使用GPU，建议使用GPU环境，因为会快很多
     layers = [3] * 3
     channels = [x * 1 for x in [8, 16, 32, 64]]
     in_channels = 3
-    model= ASKCResUNet(in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=False, classes=1)
+    model=LightWeightNetwork()
 
     model=model.cuda()
-    DATA = torch.randn(8,3,480,480).to(DEVICE)
+    DATA = torch.randn(8,1,480,480).to(DEVICE)  #in_channels, layers=layers, channels=channels, fuse_mode='AsymBi',tiny=True, classes=1
 
     output=model(DATA)
     print("output:",np.shape(output))
