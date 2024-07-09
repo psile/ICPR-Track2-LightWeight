@@ -18,9 +18,10 @@ class Trainer(object):
     def __init__(self, args):
 
         # Initial
+        self.models=[]
         self.args  = args
         self.save_prefix = '_'.join([args.model, args.dataset])
-
+        # '''
         # Read image index from TXT
         if args.mode    == 'TXT':
             dataset_dir = args.root + '/' + args.dataset
@@ -38,16 +39,77 @@ class Trainer(object):
                           transforms.Normalize(Mean_Value, Std_value)])
         testset         = InferenceSetLoader(dataset_dir,img_id=val_img_ids,base_size=args.base_size, crop_size=args.crop_size, transform=input_transform,suffix=args.suffix)
         self.test_data  = DataLoader(dataset=testset,  batch_size=args.test_batch_size, shuffle=False, num_workers=args.workers,drop_last=False)
-
+        #  ''' 
         # Choose and load model (this paper is finished by one GPU)
         model       = LightWeightNetwork()
         model.apply(weights_init_xavier)
         print("Model Initializing")
-        self.model      = model
-
-
+        # self.model      = model
+                # Load trained model
         # Checkpoint
         checkpoint = torch.load(args.model_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model = model.to('cuda')
+        # Test
+        model.float()
+        model.eval()
+        self.models.append(model)
+        
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        print("Model Initializing")
+        # self.model      = model
+                # Load trained model
+        # Checkpoint
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        model_dir='./result_WS/ICPR_Track2/ACM_126.pth.tar'
+        checkpoint = torch.load(model_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model = model.to('cuda')
+        # Test
+        model.float()
+        model.eval()
+        self.models.append(model)
+        
+        # Checkpoint
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        model_dir='./result_WS/ICPR_Track2/ACM_133.pth.tar'
+        checkpoint = torch.load(model_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model = model.to('cuda')
+        # Test
+        model.float()
+        model.eval()
+        self.models.append(model)
+        
+        # Checkpoint
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        model_dir='./result_WS/ICPR_Track2/ACM_166.pth.tar'
+        checkpoint = torch.load(model_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model = model.to('cuda')
+        # Test
+        model.float()
+        model.eval()
+        self.models.append(model)
+
+        # Checkpoint
+        model       = LightWeightNetwork()
+        model.apply(weights_init_xavier)
+        model_dir='./result_WS/ICPR_Track2/ACM_208.pth.tar'
+        checkpoint = torch.load(model_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model = model.to('cuda')
+        # Test
+        model.float()
+        model.eval()
+        self.models.append(model)
+        
+        # pdb.set_trace()
+        
 
         eval_image_path   = './result_WS/'+ args.st_model +'/'+ 'visulization_result'
         eval_fuse_path    = './result_WS/'+ args.st_model +'/'+ 'visulization_fuse'
@@ -55,11 +117,7 @@ class Trainer(object):
 
         make_visulization_dir(eval_image_path, eval_fuse_path)
 
-        # Load trained model
-        self.model.load_state_dict(checkpoint['state_dict'])
-        self.model = self.model.to('cuda')
-        # Test
-        self.model.eval()
+
         tbar = tqdm(self.test_data)
 
         with torch.no_grad():
@@ -97,15 +155,18 @@ class Trainer(object):
                             continue
 
                         block = data[:, :, block_y:block_y + block_height, block_x:block_x + block_width]
-                        
-
-                        try:
-                            pred_block = self.model(block)
-                        except RuntimeError as e:
-                            print(f'Error processing block at (i={i}, j={j}): {str(e)}')
-                            continue
-
-                        output[:, :, block_y:block_y + block_height, block_x:block_x + block_width] = pred_block
+                        py = None
+                        for model in self.models:
+                            try:
+                                pred_block = model.forward(block)
+                                pred_block = torch.sigmoid(pred_block).detach()
+                                if py is None: py = pred_block
+                                else: py += pred_block
+                            except RuntimeError as e:
+                                print(f'Error processing block at (i={i}, j={j}): {str(e)}')
+                                continue
+                        py/=len(self.models)
+                        output[:, :, block_y:block_y + block_height, block_x:block_x + block_width] = py
 
                 # 去除填充部分
                 # '''crf'''
