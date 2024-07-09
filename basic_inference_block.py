@@ -15,7 +15,7 @@ import pdb
 from model.net import *
 from basic_utils import BasicTestSetLoader,BasicInferenceSetLoader
 max_block_size = (512, 512)
-threshold=0.55
+threshold=0.60
 class Trainer(object):
     def __init__(self, args):
         # '''begin'''
@@ -45,13 +45,13 @@ class Trainer(object):
         self.save_prefix = '_'.join([args.model, args.dataset])
 
         # Read image index from TXT
-        '''
+       
         if args.mode    == 'TXT':
             dataset_dir = args.root + '/' + args.dataset
             val_img_ids, test_txt = load_dataset_eva(args.root, args.dataset, args.split_method)
 
         self.val_img_ids, _ = load_dataset1(args.root, args.dataset, args.split_method)
-        '''
+        
  
         # Preprocess and load data
         # Choose and load model (this paper is finished by one GPU)
