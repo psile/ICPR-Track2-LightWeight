@@ -78,7 +78,7 @@ class Trainer(object):
         # Checkpoint
         model       = LightWeightNetwork()
         model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_275.pth.tar'
+        model_dir='./result_WS/ICPR_Track2/ACM_126.pth.tar'
         checkpoint = torch.load(model_dir)
         model.load_state_dict(checkpoint['state_dict'])
         model = model.to('cuda')
@@ -102,7 +102,7 @@ class Trainer(object):
         # Checkpoint
         model       = LightWeightNetwork()
         model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_274.pth.tar'
+        model_dir='./result_WS/ICPR_Track2/ACM_166.pth.tar'
         checkpoint = torch.load(model_dir)
         model.load_state_dict(checkpoint['state_dict'])
         model = model.to('cuda')
@@ -114,7 +114,7 @@ class Trainer(object):
         # Checkpoint
         model       = LightWeightNetwork()
         model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_309.pth.tar'
+        model_dir='./result_WS/ICPR_Track2/ACM_208.pth.tar'
         checkpoint = torch.load(model_dir)
         model.load_state_dict(checkpoint['state_dict'])
         model = model.to('cuda')
@@ -175,7 +175,6 @@ class Trainer(object):
                         block = data[:, :, block_y:block_y + block_height, block_x:block_x + block_width]
                         
                         py = None
-                        flips = [[-2,-1]]
                         for model in self.models:
                             try:
                                 pred_block = model.forward(block)
@@ -185,13 +184,6 @@ class Trainer(object):
                             except RuntimeError as e:
                                 print(f'Error processing block at (i={i}, j={j}): {str(e)}')
                                 continue
-                        for f in flips:
-                            block_f=torch.flip(block,f)
-                            for model in self.models:
-                                p = model(block_f)
-                                p = torch.flip(p,f)
-                                py += torch.sigmoid(p).detach()
-                        py /= (1+len(flips))        
                         py/=len(self.models)
 
                         output[:, :, block_y:block_y + block_height, block_x:block_x + block_width] = py#pred_block
