@@ -70,59 +70,59 @@ class Trainer(object):
         model.eval()
         self.models.append(model)
         
-        model       = LightWeightNetwork()
-        model.apply(weights_init_xavier)
-        print("Model Initializing")
-        # self.model      = model
-                # Load trained model
-        # Checkpoint
-        model       = LightWeightNetwork()
-        model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_275.pth.tar'
-        checkpoint = torch.load(model_dir)
-        model.load_state_dict(checkpoint['state_dict'])
-        model = model.to('cuda')
-        # Test
-        model.float()
-        model.eval()
-        self.models.append(model)
+        # model       = LightWeightNetwork()
+        # model.apply(weights_init_xavier)
+        # print("Model Initializing")
+        # # self.model      = model
+        #         # Load trained model
+        # # Checkpoint
+        # model       = LightWeightNetwork()
+        # model.apply(weights_init_xavier)
+        # model_dir='./result_WS/ICPR_Track2/ACM_275.pth.tar'
+        # checkpoint = torch.load(model_dir)
+        # model.load_state_dict(checkpoint['state_dict'])
+        # model = model.to('cuda')
+        # # Test
+        # model.float()
+        # model.eval()
+        # self.models.append(model)
         
-        # Checkpoint
-        model       = LightWeightNetwork()
-        model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_133.pth.tar'
-        checkpoint = torch.load(model_dir)
-        model.load_state_dict(checkpoint['state_dict'])
-        model = model.to('cuda')
-        # Test
-        model.float()
-        model.eval()
-        self.models.append(model)
+        # # Checkpoint
+        # model       = LightWeightNetwork()
+        # model.apply(weights_init_xavier)
+        # model_dir='./result_WS/ICPR_Track2/ACM_133.pth.tar'
+        # checkpoint = torch.load(model_dir)
+        # model.load_state_dict(checkpoint['state_dict'])
+        # model = model.to('cuda')
+        # # Test
+        # model.float()
+        # model.eval()
+        # self.models.append(model)
         
-        # Checkpoint
-        model       = LightWeightNetwork()
-        model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_274.pth.tar'
-        checkpoint = torch.load(model_dir)
-        model.load_state_dict(checkpoint['state_dict'])
-        model = model.to('cuda')
-        # Test
-        model.float()
-        model.eval()
-        self.models.append(model)
+        # # Checkpoint
+        # model       = LightWeightNetwork()
+        # model.apply(weights_init_xavier)
+        # model_dir='./result_WS/ICPR_Track2/ACM_274.pth.tar'
+        # checkpoint = torch.load(model_dir)
+        # model.load_state_dict(checkpoint['state_dict'])
+        # model = model.to('cuda')
+        # # Test
+        # model.float()
+        # model.eval()
+        # self.models.append(model)
 
-        # Checkpoint
-        model       = LightWeightNetwork()
-        model.apply(weights_init_xavier)
-        model_dir='./result_WS/ICPR_Track2/ACM_309.pth.tar'
-        checkpoint = torch.load(model_dir)
-        model.load_state_dict(checkpoint['state_dict'])
-        model = model.to('cuda')
-        # Test
-        model.float()
-        model.eval()
-        self.models.append(model)
-        # pdb.set_trace()
+        # # Checkpoint
+        # model       = LightWeightNetwork()
+        # model.apply(weights_init_xavier)
+        # model_dir='./result_WS/ICPR_Track2/ACM_309.pth.tar'
+        # checkpoint = torch.load(model_dir)
+        # model.load_state_dict(checkpoint['state_dict'])
+        # model = model.to('cuda')
+        # # Test
+        # model.float()
+        # model.eval()
+        # self.models.append(model)
+        # # pdb.set_trace()
 
 
 
@@ -175,7 +175,7 @@ class Trainer(object):
                         block = data[:, :, block_y:block_y + block_height, block_x:block_x + block_width]
                         
                         py = None
-                        flips = [[-2,-1]]
+                        flips = [[-1],[-2,-1]]
                         for model in self.models:
                             try:
                                 pred_block = model.forward(block)
